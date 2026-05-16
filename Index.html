@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Routine Dashboard (2026-2027)</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --primary: #4f46e5;
+            --primary-light: #eeebff;
+            --accent: #059669;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Tabs / Filter Controls */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: var(--card-bg);
+            padding: 1.25rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            min-width: 60px;
+        }
+
+        .btn {
+            background: #f1f3f5;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+        }
+
+        .btn:hover {
+            background: #e9ecef;
+        }
+
+        .btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* View Mode Toggle */
+        .view-toggle {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Grid Output Container */
+        .routine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f3f5;
+            padding-bottom: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .card-badge {
+            font-size: 0.75rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .period-item {
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .period-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .period-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .period-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.1rem;
+        }
+
+        .subject {
+            font-weight: 600;
+        }
+
+        .teacher {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .no-class {
+            color: #ced4da;
+            font-style: italic;
+        }
+
+        @media(max-width: 768px) {
+            body { padding: 1rem 0.5rem; }
+            .controls { padding: 1rem; }
+            .control-group { gap: 0.5rem; }
+            .btn { padding: 0.4rem 0.75rem; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>DAILY ROUTINE DASHBOARD</h1>
+        <div class="subtitle">Academic Year 2026 - 2027</div>
+    </header>
+
+    <div class="controls">
+        <div class="control-group">
+            <span class="control-label">Day:</span>
+            <button class="btn active" onclick="setDay('MONDAY', this)">Mon</button>
+            <button class="btn" onclick="setDay('TUESDAY', this)">Tue</button>
+            <button class="btn" onclick="setDay('WEDNESDAY', this)">Wed</button>
+            <button class="btn" onclick="setDay('THURSDAY', this)">Thu</button>
+            <button class="btn" onclick="setDay('FRIDAY', this)">Fri</button>
+            <button class="btn" onclick="setDay('SATURDAY', this)">Sat</button>
+        </div>
+
+        <div class="control-group view-toggle">
+            <span class="control-label">View By:</span>
+            <button class="btn active" onclick="setViewMode('class', this)">Class Wise</button>
+            <button class="btn" onclick="setViewMode('teacher', this)">Teacher Wise</button>
+        </div>
+    </div>
+
+    <div id="routineDisplay" class="routine-grid"></div>
+</div>
+
+<script>
+    // System Timetable Core Database Object
+    const TIMETABLE = {
+        "MONDAY": {
+            "I": [ {sub:"MIL", t:"Sarmistha Das"}, {sub:"English", t:"Fulmoti Das"}, {sub:"Mathematics", t:"Suniti Singha"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"English (Reading)", t:"Fulmoti Das"}, {sub:"SPORTS", t:"Sampuran Kahar"}, {sub:null}, {sub:null} ],
+            "II": [ {sub:"MIL", t:"Doly Chakraborty"}, {sub:"English", t:"Shrabani Ray Ch."}, {sub:"Mathematics", t:"Rupam Kumar Das"}, {sub:"MIL", t:"Doly Chakraborty"}, {sub:"English (Reading)", t:"Shrabani Ray Ch."}, {sub:"SPORTS", t:"Suniti Singha"}, {sub:null}, {sub:null} ],
+            "III": [ {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Rupam Kumar Das"}, {sub:"English", t:"Santab Dey"}, {sub:"Art Education", t:"Kamaleswar Mili"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"Reading", t:"Priyanka Sinha"}, {sub:null}, {sub:null} ],
+            "IV": [ {sub:"English", t:"L. Khagemba Singha"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"MIL", t:"Fulmoti Das"}, {sub:"Art Education", t:"Rupam Kumar Das"}, {sub:"Reading", t:"Sarmistha Das"}, {sub:null}, {sub:null} ],
+            "V": [ {sub:"English", t:"Srabani Ray Ch."}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"EVS", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Santab Dey"}, {sub:"Reading", t:"Doly Chakraborty"}, {sub:"Art Education", t:"Mitali Dey"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:null} ],
+            "VI": [ {sub:"English", t:"Santab Dey"}, {sub:"MIL", t:"Mitali Dey"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Art Education", t:"Kamaleswar Mili"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"SPORTS", t:"Kamaleswar Mili"} ],
+            "VII": [ {sub:"Social Science", t:"Priyanka Sinha"}, {sub:"English", t:"Sandeep Dhar"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"MIL", t:"Srabani Ray Ch."}, {sub:"Art Education", t:"Priyanka Sinha"}, {sub:"SPORTS", t:"Santab Dey"} ],
+            "VIII": [ {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"English", t:"Priyanka Sinha"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Art Education", t:"Kamaleswar Mili"}, {sub:"SPORTS", t:"Jay Sinha"} ]
+        },
+        "TUESDAY": {
+            "I": [ {sub:"MIL", t:"Sarmistha Das"}, {sub:"Mathematics", t:"Suniti Singha"}, {sub:"English", t:"Fulmoti Das"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"Art Education", t:"Suniti Singha"}, {sub:"Library", t:"Sampuran Kahar"}, {sub:null}, {sub:null} ],
+            "II": [ {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Rupam Kumar Das"}, {sub:"English", t:"Shrabani Ray Ch."}, {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Art Education", t:"Doly Chakraborty"}, {sub:"Library", t:"Suniti Singha"}, {sub:null}, {sub:null} ],
+            "III": [ {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"EVS", t:"Rupam Kumar Das"}, {sub:"Reading", t:"Kamaleswar Mili"}, {sub:"English", t:"Santab Dey"}, {sub:"Physical Education", t:"Priyanka Sinha"}, {sub:null}, {sub:null} ],
+            "IV": [ {sub:"English", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Fulmoti Das"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"Reading", t:"Sarmistha Das"}, {sub:"Physical Education", t:"Rupam Kumar Das"}, {sub:null}, {sub:null} ],
+            "V": [ {sub:"English", t:"Srabani Ray Ch."}, {sub:"EVS", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Santab Dey"}, {sub:"Reading", t:"Jay Sinha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"Physical Education", t:"Mitali Dey"}, {sub:null}, {sub:null} ],
+            "VI": [ {sub:"English", t:"Santab Dey"}, {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"MIL", t:"Mitali Dey"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"I.C.T.", t:"Biswajit Chakraborty"}, {sub:"Physical Education", t:"Rupam Kumar Das"} ],
+            "VII": [ {sub:"Social Science", t:"Priyanka Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"MIL", t:"Srabani Ray Ch."}, {sub:"English", t:"Sandeep Dhar"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"Art Education", t:"Santab Dey"}, {sub:"Physical Education", t:"Priyanka Sinha"} ],
+            "VIII": [ {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"English", t:"Priyanka Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"I.C.T.", t:"L. Khagemba Singha"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Physical Education", t:"Sandeep Dhar"} ]
+        },
+        "WEDNESDAY": {
+            "I": [ {sub:"MIL", t:"Sarmistha Das"}, {sub:"English", t:"Fulmoti Das"}, {sub:"Mathematics", t:"Suniti Singha"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"English (Reading)", t:"Fulmoti Das"}, {sub:"Physical Education", t:"Sampuran Kahar"}, {sub:null}, {sub:null} ],
+            "II": [ {sub:"MIL", t:"Doly Chakraborty"}, {sub:"English", t:"Shrabani Ray Ch."}, {sub:"Mathematics", t:"Rupam Kumar Das"}, {sub:"MIL", t:"Doly Chakraborty"}, {sub:"English (Reading)", t:"Shrabani Ray Ch."}, {sub:"Physical Education", t:"Suniti Singha"}, {sub:null}, {sub:null} ],
+            "III": [ {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Rupam Kumar Das"}, {sub:"English", t:"Santab Dey"}, {sub:"Art Education", t:"Kamaleswar Mili"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"Reading", t:"Priyanka Sinha"}, {sub:null}, {sub:null} ],
+            "IV": [ {sub:"English", t:"L. Khagemba Singha"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"MIL", t:"Fulmoti Das"}, {sub:"Art Education", t:"Rupam Kumar Das"}, {sub:"Reading", t:"Sarmistha Das"}, {sub:null}, {sub:null} ],
+            "V": [ {sub:"English", t:"Srabani Ray Ch."}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"EVS", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Santab Dey"}, {sub:"Reading", t:"Doly Chakraborty"}, {sub:"General Knowledge", t:"Mitali Dey"}, {sub:null}, {sub:null} ],
+            "VI": [ {sub:"English", t:"Santab Dey"}, {sub:"MIL", t:"Mitali Dey"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Kola & Byayam", t:"Kamaleswar Mili"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Yoga", t:"Priyanka Sinha"} ],
+            "VII": [ {sub:"Social Science", t:"Priyanka Sinha"}, {sub:"English", t:"Sandeep Dhar"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"MIL", t:"Srabani Ray Ch."}, {sub:"Kola & Byayam", t:"Priyanka Sinha"}, {sub:"Yoga", t:"Sandeep Dhar"} ],
+            "VIII": [ {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"English", t:"Priyanka Sinha"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"General Knowledge", t:"Kamaleswar Mili"}, {sub:"Yoga", t:"Santab Dey"} ]
+        },
+        "THURSDAY": {
+            "I": [ {sub:"MIL", t:"Sarmistha Das"}, {sub:"Mathematics", t:"Suniti Singha"}, {sub:"English", t:"Fulmoti Das"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"Art Education", t:"Suniti Singha"}, {sub:"Communication Skills", t:"Kamaleswar Mili"}, {sub:null}, {sub:null} ],
+            "II": [ {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Rupam Kumar Das"}, {sub:"English", t:"Shrabani Ray Ch."}, {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Art Education", t:"Doly Chakraborty"}, {sub:"Communication Skills", t:"Suniti Singha"}, {sub:null}, {sub:null} ],
+            "III": [ {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"EVS", t:"Rupam Kumar Das"}, {sub:"Reading", t:"Kamaleswar Mili"}, {sub:"English", t:"Santab Dey"}, {sub:"SPORTS", t:"Priyanka Sinha"}, {sub:null}, {sub:null} ],
+            "IV": [ {sub:"English", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Fulmoti Das"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"Reading", t:"Sarmistha Das"}, {sub:"SPORTS", t:"Rupam Kumar Das"}, {sub:null}, {sub:null} ],
+            "V": [ {sub:"English", t:"Srabani Ray Ch."}, {sub:"EVS", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Santab Dey"}, {sub:"Reading", t:"Jay Sinha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"General Knowledge", t:"Mitali Dey"}, {sub:null}, {sub:null} ],
+            "VI": [ {sub:"English", t:"Santab Dey"}, {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"MIL", t:"Mitali Dey"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Charitra Path", t:"Priyanka Sinha"}, {sub:"Physical Education", t:"Fulmoti Das"} ],
+            "VII": [ {sub:"Social Science", t:"Priyanka Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"MIL", t:"Srabani Ray Ch."}, {sub:"English", t:"Sandeep Dhar"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"Charitra Path", t:"Sandeep Dhar"}, {sub:"Physical Education", t:"Shrabani Ray Ch."} ],
+            "VIII": [ {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"English", t:"Priyanka Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Art Education", t:"Kamaleswar Mili"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Physical Education", t:"Priyanka Sinha"} ]
+        },
+        "FRIDAY": {
+            "I": [ {sub:"MIL", t:"Sarmistha Das"}, {sub:"English", t:"Fulmoti Das"}, {sub:"Mathematics", t:"Suniti Singha"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"Maths (Revision)", t:"Fulmoti Das"}, {sub:"Conversation", t:"Sampuran Kahar"}, {sub:null}, {sub:null} ],
+            "II": [ {sub:"MIL", t:"Doly Chakraborty"}, {sub:"English", t:"Shrabani Ray Ch."}, {sub:"Mathematics", t:"Rupam Kumar Das"}, {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Maths (Revision)", t:"Shrabani Ray Ch."}, {sub:"Conversation", t:"Suniti Singha"}, {sub:null}, {sub:null} ],
+            "III": [ {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Rupam Kumar Das"}, {sub:"English", t:"Santab Dey"}, {sub:"General Knowledge", t:"Kamaleswar Mili"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"Reading", t:"Priyanka Sinha"}, {sub:null}, {sub:null} ],
+            "IV": [ {sub:"English", t:"L. Khagemba Singha"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"MIL", t:"Fulmoti Das"}, {sub:"General Knowledge", t:"Rupam Kumar Das"}, {sub:"Reading", t:"Sarmistha Das"}, {sub:null}, {sub:null} ],
+            "V": [ {sub:"English", t:"Srabani Ray Ch."}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"EVS", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Santab Dey"}, {sub:"Reading", t:"Doly Chakraborty"}, {sub:"SPORTS", t:"Mitali Dey"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:null} ],
+            "VI": [ {sub:"English", t:"Santab Dey"}, {sub:"MIL", t:"Mitali Dey"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"General Knowledge", t:"Kamaleswar Mili"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Library", t:"Mitali Dey"} ],
+            "VII": [ {sub:"Social Science", t:"Priyanka Sinha"}, {sub:"English", t:"Sandeep Dhar"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"MIL", t:"Srabani Ray Ch."}, {sub:"General Knowledge", t:"Priyanka Sinha"}, {sub:"Library", t:"Mukti Gope"} ],
+            "VIII": [ {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"English", t:"Priyanka Sinha"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"General Knowledge", t:"Kamaleswar Mili"}, {sub:"Library", t:"Sampuran Kahar"} ]
+        },
+        "SATURDAY": {
+            "I": [ {sub:"MIL", t:"Sarmistha Das"}, {sub:"Mathematics", t:"Suniti Singha"}, {sub:"English", t:"Fulmoti Das"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"Work Education", t:"Sampuran Kahar"}, {sub:null}, {sub:null}, {sub:null} ],
+            "II": [ {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Rupam Kumar Das"}, {sub:"English", t:"Shrabani Ray Ch."}, {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Work Education", t:"Suniti Singha"}, {sub:null}, {sub:null}, {sub:null} ],
+            "III": [ {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"EVS", t:"Rupam Kumar Das"}, {sub:"Maths (Revision)", t:"Kamaleswar Mili"}, {sub:"Work Education", t:"Sarmistha Das"}, {sub:null}, {sub:null}, {sub:null} ],
+            "IV": [ {sub:"English", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Fulmoti Das"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"Work Education", t:"Sarmistha Das"}, {sub:null}, {sub:null}, {sub:null} ],
+            "V": [ {sub:"English", t:"Srabani Ray Ch."}, {sub:"EVS", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Santab Dey"}, {sub:"MIL (Revision)", t:"Srabani Ray Ch."}, {sub:"Work Education", t:"Fulmoti Das"}, {sub:null}, {sub:null}, {sub:null} ],
+            "VI": [ {sub:"English", t:"Santab Dey"}, {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"MIL", t:"Mitali Dey"}, {sub:"Work Education", t:"Mukti Gope"}, {sub:null}, {sub:null}, {sub:null} ],
+            "VII": [ {sub:"Social Science", t:"Priyanka Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"MIL", t:"Srabani Ray Ch."}, {sub:"Work Education", t:"Sandeep Dhar"}, {sub:null}, {sub:null}, {sub:null} ],
+            "VIII": [ {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"English", t:"Priyanka Sinha"}, {sub:"Work Education", t:"Santab Dey"}, {sub:null}, {sub:null}, {sub:null} ]
+        }
+    };
+
+    const PERIODS = [
+        { label: "1st Period", time: "09:15 - 10:00 AM" },
+        { label: "2nd Period", time: "10:00 - 10:40 AM" },
+        { label: "3rd Period", time: "10:50 - 11:30 AM" },
+        { label: "4th Period", time: "11:30 - 12:10 PM" },
+        { label: "5th Period", time: "12:45 - 01:25 PM" },
+        { label: "6th Period", time: "01:25 - 02:05 PM" },
+        { label: "7th Period", time: "02:05 - 02:45 PM" },
+        { label: "8th Period", time: "02:45 - 03:15 PM" }
+    ];
+
+    let currentDay = "MONDAY";
+    let viewMode = "class"; // 'class' or 'teacher'
+
+    function setDay(day, element) {
+        currentDay = day;
+        clearActiveInGroup(element);
+        element.classList.add('active');
+        render();
+    }
+
+    function setViewMode(mode, element) {
+        viewMode = mode;
+        clearActiveInGroup(element);
+        element.classList.add('active');
+        render();
+    }
+
+    function clearActiveInGroup(element) {
+        const siblings = element.parentElement.querySelectorAll('.btn');
+        siblings.forEach(btn => btn.classList.remove('active'));
+    }
+
+    function render() {
+        const container = document.getElementById('routineDisplay');
+        container.innerHTML = '';
+        
+        if (viewMode === 'class') {
+            renderClassWise(container);
+        } else {
+            renderTeacherWise(container);
+        }
+    }
+
+    function renderClassWise(container) {
+        const dayData = TIMETABLE[currentDay];
+        
+        for (const [className, periods] of Object.entries(dayData)) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            let cardHtml = `
+                <div class="card-header">
+                    <div class="card-title">Class ${className}</div>
+                    <span class="card-badge">${currentDay}</span>
+                </div>
+            `;
+            
+            periods.forEach((p, idx) => {
+                cardHtml += `
+                    <div class="period-item">
+                        <div class="period-time">${PERIODS[idx].label} (${PERIODS[idx].time})</div>
+                        <div class="period-details">
+                            ${p.sub ? `<span class="subject">${p.sub}</span><span class="teacher">${p.t}</span>` : '<span class="no-class">—</span>'}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            card.innerHTML = cardHtml;
+            container.appendChild(card);
+        }
+    }
+
+    function renderTeacherWise(container) {
+        const dayData = TIMETABLE[currentDay];
+        let teacherData = {};
+
+        // Parse day data and pivot data structured by individual teachers
+        for (const [className, periods] of Object.entries(dayData)) {
+            periods.forEach((p, idx) => {
+                if(p.sub && p.t) {
+                    const teacherName = p.t.trim();
+                    if(!teacherData[teacherName]) {
+                        teacherData[teacherName] = Array(8).fill(null).map(() => []);
+                    }
+                    teacherData[teacherName][idx].push({ sub: p.sub, cls: className });
+                }
+            });
+        }
+
+        // Sort teachers alphabetically
+        const sortedTeachers = Object.keys(teacherData).sort();
+
+        sortedTeachers.forEach(teacher => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            let cardHtml = `
+                <div class="card-header">
+                    <div class="card-title" style="color: var(--accent);">${teacher}</div>
+                    <span class="card-badge" style="background-color: #e6f4ea; color: var(--accent);">${currentDay}</span>
+                </div>
+            `;
+
+            let hasAnyClass = false;
+            teacherData[teacher].forEach((periodsAtIdx, idx) => {
+                if(periodsAtIdx.length > 0) {
+                    hasAnyClass = true;
+                    periodsAtIdx.forEach(info => {
+                        cardHtml += `
+                            <div class="period-item">
+                                <div class="period-time">${PERIODS[idx].label} (${PERIODS[idx].time})</div>
+                                <div class="period-details">
+                                    <span class="subject">${info.sub}</span>
+                                    <span class="card-badge">Class ${info.cls}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    cardHtml += `
+                        <div class="period-item">
+                            <div class="period-time">${PERIODS[idx].label} (${PERIODS[idx].time})</div>
+                            <div class="period-details"><span class="no-class">Free Period</span></div>
+                        </div>
+                    `;
+                }
+            });
+
+            card.innerHTML = cardHtml;
+            container.appendChild(card);
+        });
+    }
+
+    // Initial load
+    render();
+</script>
+
+</body>
+</html>
