@@ -298,9 +298,21 @@
 
 <div class="container">
     <header>
-        <h1>📅 DAILY ROUTINE DASHBOARD</h1>
+        <h1> DAILY ROUTINE DASHBOARD</h1>
         <div class="subtitle">Academic Year 2026 - 2027</div>
     </header>
+    <div id="liveDateTime" style="font-weight: bold; color: red; text-align: center; margin: 0.5rem 0; font-size: 1.1rem;"></div>
+<script>
+  function updateDateTime() {
+    const now = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateStr = now.toLocaleDateString(undefined, options);
+    const timeStr = now.toLocaleTimeString();
+    document.getElementById('liveDateTime').innerHTML = `📅 ${dateStr} &nbsp;|&nbsp; 🕒 ${timeStr}`;
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+</script>
 
     <!-- NEW PDF REPORTS SECTION (April to October & October to March) -->
     <div class="reports-section">
@@ -310,7 +322,7 @@
         </div>
         <div class="pdf-buttons">
             <button class="pdf-btn" id="pdfAprOctBtn">
-                <span class="pdf-icon">📆</span> April to October
+                <span class="pdf-icon"></span> April to October
                 <span class="badge-new">PDF</span>
             </button>
             <button class="pdf-btn" id="pdfOctMarBtn">
