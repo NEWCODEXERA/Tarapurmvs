@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Routine Dashboard (2026-2027)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>School Routine Dashboard (2026-2027) with Reports</title>
     <style>
         :root {
             --bg-color: #f8f9fa;
@@ -14,6 +15,7 @@
             --primary: #4f46e5;
             --primary-light: #eeebff;
             --accent: #059669;
+            --pdf-accent: #2c7da0;
         }
 
         * {
@@ -36,7 +38,7 @@
         }
 
         header {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             text-align: center;
         }
 
@@ -52,7 +54,89 @@
             font-size: 0.95rem;
         }
 
-        /* Tabs / Filter Controls */
+        /* PDF Reports Section (new) */
+        .reports-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.8rem;
+            padding: 1rem 1.5rem 1.2rem 1.5rem;
+            border: 1px solid #eef2f6;
+            transition: all 0.2s;
+        }
+
+        .reports-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #eef2f8;
+            padding-bottom: 0.6rem;
+        }
+
+        .reports-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e2f41;
+            letter-spacing: -0.2px;
+        }
+
+        .reports-header span {
+            font-size: 1.4rem;
+        }
+
+        .pdf-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .pdf-btn {
+            background: #f0f4fa;
+            border: none;
+            border-radius: 60px;
+            padding: 0.7rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #1f4662;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-family: inherit;
+            border: 1px solid #dce5ec;
+        }
+
+        .pdf-btn:hover {
+            background: #e3ecf5;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+            border-color: #cbdae4;
+        }
+
+        .pdf-btn:active {
+            transform: translateY(1px);
+        }
+
+        .pdf-icon {
+            font-size: 1.2rem;
+        }
+
+        .badge-new {
+            background: #eef2ff;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            color: #2c5282;
+            font-weight: 500;
+            margin-left: 6px;
+        }
+
+        /* Tabs / Filter Controls (original) */
         .controls {
             display: flex;
             flex-direction: column;
@@ -188,11 +272,25 @@
             font-style: italic;
         }
 
+        .info-note {
+            background: #eef3fa;
+            border-radius: 0.75rem;
+            padding: 0.5rem 1rem;
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: #2c5a74;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         @media(max-width: 768px) {
             body { padding: 1rem 0.5rem; }
             .controls { padding: 1rem; }
             .control-group { gap: 0.5rem; }
             .btn { padding: 0.4rem 0.75rem; font-size: 0.85rem; }
+            .pdf-btn { padding: 0.55rem 1.2rem; font-size: 0.85rem; }
+            .reports-section { padding: 0.8rem 1rem; }
         }
     </style>
 </head>
@@ -200,9 +298,30 @@
 
 <div class="container">
     <header>
-        <h1>DAILY ROUTINE DASHBOARD</h1>
+        <h1>📅 DAILY ROUTINE DASHBOARD</h1>
         <div class="subtitle">Academic Year 2026 - 2027</div>
     </header>
+
+    <!-- NEW PDF REPORTS SECTION (April to October & October to March) -->
+    <div class="reports-section">
+        <div class="reports-header">
+            <span>📚</span>
+            <h3>Seasonal Reports & Notifications</h3>
+        </div>
+        <div class="pdf-buttons">
+            <button class="pdf-btn" id="pdfAprOctBtn">
+                <span class="pdf-icon">📆</span> April to October
+                <span class="badge-new">PDF</span>
+            </button>
+            <button class="pdf-btn" id="pdfOctMarBtn">
+                <span class="pdf-icon">❄️</span> October To March
+                <span class="badge-new">PDF</span>
+            </button>
+            <div class="info-note">
+                <span>🔖</span> Opens in new tab · Tab title matches report name
+            </div>
+        </div>
+    </div>
 
     <div class="controls">
         <div class="control-group">
@@ -226,7 +345,7 @@
 </div>
 
 <script>
-    // System Timetable Core Database Object
+    // ---------- TIMETABLE DATA (unchanged from original dashboard) ----------
     const TIMETABLE = {
         "MONDAY": {
             "I": [ {sub:"MIL", t:"Sarmistha Das"}, {sub:"English", t:"Fulmoti Das"}, {sub:"Mathematics", t:"Suniti Singha"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"English (Reading)", t:"Fulmoti Das"}, {sub:"SPORTS", t:"Sampuran Kahar"}, {sub:null}, {sub:null} ],
@@ -268,7 +387,7 @@
             "VII": [ {sub:"Social Science", t:"Priyanka Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"MIL", t:"Srabani Ray Ch."}, {sub:"English", t:"Sandeep Dhar"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"Charitra Path", t:"Sandeep Dhar"}, {sub:"Physical Education", t:"Shrabani Ray Ch."} ],
             "VIII": [ {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"English", t:"Priyanka Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Art Education", t:"Kamaleswar Mili"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"Physical Education", t:"Priyanka Sinha"} ]
         },
-        "FRIDAY": {
+"FRIDAY": {
             "I": [ {sub:"MIL", t:"Sarmistha Das"}, {sub:"English", t:"Fulmoti Das"}, {sub:"Mathematics", t:"Suniti Singha"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"Maths (Revision)", t:"Fulmoti Das"}, {sub:"Conversation", t:"Sampuran Kahar"}, {sub:null}, {sub:null} ],
             "II": [ {sub:"MIL", t:"Doly Chakraborty"}, {sub:"English", t:"Shrabani Ray Ch."}, {sub:"Mathematics", t:"Rupam Kumar Das"}, {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Maths (Revision)", t:"Shrabani Ray Ch."}, {sub:"Conversation", t:"Suniti Singha"}, {sub:null}, {sub:null} ],
             "III": [ {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Rupam Kumar Das"}, {sub:"English", t:"Santab Dey"}, {sub:"General Knowledge", t:"Kamaleswar Mili"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"Reading", t:"Priyanka Sinha"}, {sub:null}, {sub:null} ],
@@ -283,7 +402,7 @@
             "II": [ {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Rupam Kumar Das"}, {sub:"English", t:"Shrabani Ray Ch."}, {sub:"MIL", t:"Doly Chakraborty"}, {sub:"Work Education", t:"Suniti Singha"}, {sub:null}, {sub:null}, {sub:null} ],
             "III": [ {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"MIL", t:"Sarmistha Das"}, {sub:"EVS", t:"Rupam Kumar Das"}, {sub:"Maths (Revision)", t:"Kamaleswar Mili"}, {sub:"Work Education", t:"Sarmistha Das"}, {sub:null}, {sub:null}, {sub:null} ],
             "IV": [ {sub:"English", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Fulmoti Das"}, {sub:"Mathematics", t:"Biswajit Chakraborty"}, {sub:"EVS", t:"Abinash Ch. Das"}, {sub:"Work Education", t:"Sarmistha Das"}, {sub:null}, {sub:null}, {sub:null} ],
-            "V": [ {sub:"English", t:"Srabani Ray Ch."}, {sub:"EVS", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Santab Dey"}, {sub:"MIL (Revision)", t:"Joy Sinha"}, {sub:"Work Education", t:"Fulmoti Das"}, {sub:null}, {sub:null}, {sub:null} ],
+            "V": [ {sub:"English", t:"Srabani Ray Ch."}, {sub:"EVS", t:"Doly Chakraborty"}, {sub:"Mathematics", t:"Santab Dey"}, {sub:"MIL (Revision)", t:"Srabani Ray Ch."}, {sub:"Work Education", t:"Fulmoti Das"}, {sub:null}, {sub:null}, {sub:null} ],
             "VI": [ {sub:"English", t:"Santab Dey"}, {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Science", t:"Mukti Gope"}, {sub:"MIL", t:"Mitali Dey"}, {sub:"Work Education", t:"Mukti Gope"}, {sub:null}, {sub:null}, {sub:null} ],
             "VII": [ {sub:"Social Science", t:"Priyanka Sinha"}, {sub:"Science", t:"Mukti Gope"}, {sub:"Hindi", t:"Jay Sinha"}, {sub:"MIL", t:"Srabani Ray Ch."}, {sub:"Work Education", t:"Sandeep Dhar"}, {sub:null}, {sub:null}, {sub:null} ],
             "VIII": [ {sub:"Social Science", t:"Sandeep Dhar"}, {sub:"Mathematics", t:"L. Khagemba Singha"}, {sub:"MIL", t:"Abinash Ch. Das"}, {sub:"English", t:"Priyanka Sinha"}, {sub:"Work Education", t:"Santab Dey"}, {sub:null}, {sub:null}, {sub:null} ]
@@ -302,7 +421,7 @@
     ];
 
     let currentDay = "MONDAY";
-    let viewMode = "class"; // 'class' or 'teacher'
+    let viewMode = "class";
 
     function setDay(day, element) {
         currentDay = day;
@@ -326,7 +445,6 @@
     function render() {
         const container = document.getElementById('routineDisplay');
         container.innerHTML = '';
-        
         if (viewMode === 'class') {
             renderClassWise(container);
         } else {
@@ -336,29 +454,13 @@
 
     function renderClassWise(container) {
         const dayData = TIMETABLE[currentDay];
-        
         for (const [className, periods] of Object.entries(dayData)) {
             const card = document.createElement('div');
             card.className = 'card';
-            
-            let cardHtml = `
-                <div class="card-header">
-                    <div class="card-title">Class ${className}</div>
-                    <span class="card-badge">${currentDay}</span>
-                </div>
-            `;
-            
+            let cardHtml = `<div class="card-header"><div class="card-title">Class ${className}</div><span class="card-badge">${currentDay}</span></div>`;
             periods.forEach((p, idx) => {
-                cardHtml += `
-                    <div class="period-item">
-                        <div class="period-time">${PERIODS[idx].label} (${PERIODS[idx].time})</div>
-                        <div class="period-details">
-                            ${p.sub ? `<span class="subject">${p.sub}</span><span class="teacher">${p.t}</span>` : '<span class="no-class">—</span>'}
-                        </div>
-                    </div>
-                `;
+                cardHtml += `<div class="period-item"><div class="period-time">${PERIODS[idx].label} (${PERIODS[idx].time})</div><div class="period-details">${p.sub ? `<span class="subject">${p.sub}</span><span class="teacher">${p.t}</span>` : '<span class="no-class">—</span>'}</div></div>`;
             });
-            
             card.innerHTML = cardHtml;
             container.appendChild(card);
         }
@@ -367,66 +469,80 @@
     function renderTeacherWise(container) {
         const dayData = TIMETABLE[currentDay];
         let teacherData = {};
-
-        // Parse day data and pivot data structured by individual teachers
         for (const [className, periods] of Object.entries(dayData)) {
             periods.forEach((p, idx) => {
                 if(p.sub && p.t) {
                     const teacherName = p.t.trim();
-                    if(!teacherData[teacherName]) {
-                        teacherData[teacherName] = Array(8).fill(null).map(() => []);
-                    }
+                    if(!teacherData[teacherName]) teacherData[teacherName] = Array(8).fill(null).map(() => []);
                     teacherData[teacherName][idx].push({ sub: p.sub, cls: className });
                 }
             });
         }
-
-        // Sort teachers alphabetically
         const sortedTeachers = Object.keys(teacherData).sort();
-
         sortedTeachers.forEach(teacher => {
             const card = document.createElement('div');
             card.className = 'card';
-            
-            let cardHtml = `
-                <div class="card-header">
-                    <div class="card-title" style="color: var(--accent);">${teacher}</div>
-                    <span class="card-badge" style="background-color: #e6f4ea; color: var(--accent);">${currentDay}</span>
-                </div>
-            `;
-
-            let hasAnyClass = false;
+            let cardHtml = `<div class="card-header"><div class="card-title" style="color: var(--accent);">${teacher}</div><span class="card-badge" style="background-color: #e6f4ea; color: var(--accent);">${currentDay}</span></div>`;
             teacherData[teacher].forEach((periodsAtIdx, idx) => {
                 if(periodsAtIdx.length > 0) {
-                    hasAnyClass = true;
                     periodsAtIdx.forEach(info => {
-                        cardHtml += `
-                            <div class="period-item">
-                                <div class="period-time">${PERIODS[idx].label} (${PERIODS[idx].time})</div>
-                                <div class="period-details">
-                                    <span class="subject">${info.sub}</span>
-                                    <span class="card-badge">Class ${info.cls}</span>
-                                </div>
-                            </div>
-                        `;
+                        cardHtml += `<div class="period-item"><div class="period-time">${PERIODS[idx].label} (${PERIODS[idx].time})</div><div class="period-details"><span class="subject">${info.sub}</span><span class="card-badge">Class ${info.cls}</span></div></div>`;
                     });
                 } else {
-                    cardHtml += `
-                        <div class="period-item">
-                            <div class="period-time">${PERIODS[idx].label} (${PERIODS[idx].time})</div>
-                            <div class="period-details"><span class="no-class">Free Period</span></div>
-                        </div>
-                    `;
+                    cardHtml += `<div class="period-item"><div class="period-time">${PERIODS[idx].label} (${PERIODS[idx].time})</div><div class="period-details"><span class="no-class">Free Period</span></div></div>`;
                 }
             });
-
             card.innerHTML = cardHtml;
             container.appendChild(card);
         });
     }
 
-    // Initial load
-    render();
+    // ---------- PDF CUSTOM TAB HANDLER (OPEN WITH DYNAMIC TITLE) ----------
+    function openPdfWithCustomTabName(tabTitle, embedUrl) {
+        const newWindow = window.open('', '_blank');
+        if (!newWindow) {
+            alert("⚠️ Popup blocked! Please allow popups for this website to open PDFs in a new tab.\nYou can also right-click and choose 'Open link in new tab', but custom tab title will not appear.");
+            return;
+        }
+        const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(tabTitle)}</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;} body,html{width:100%;height:100%;overflow:hidden;background:#1f2a36;} .pdf-container{width:100%;height:100%;} iframe{width:100%;height:100%;border:none;} .info-bar{position:fixed;bottom:8px;left:0;right:0;text-align:center;background:rgba(0,0,0,0.6);color:white;font-size:12px;padding:5px;backdrop-filter:blur(6px);}</style>
+</head>
+<body><div class="pdf-container"><iframe src="${escapeHtml(embedUrl)}" allowfullscreen title="PDF: ${escapeHtml(tabTitle)}"></iframe></div><div class="info-bar">📄 ${escapeHtml(tabTitle)} — Google Drive viewer</div></body></html>`;
+        newWindow.document.write(fullHtml);
+        newWindow.document.close();
+        if (newWindow.focus) newWindow.focus();
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // PDF configuration
+    const PDF_CONFIG = {
+        "April to October": "https://drive.google.com/file/d/1lKw1CMaXLJs405XyM2qU96sBJMLz9do1/preview",
+        "October To March": "https://drive.google.com/file/d/1i010pUM_nOtje1W8RphehZD_eYH2ivVm/preview"
+    };
+
+    // attach event listeners after DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+        const aprBtn = document.getElementById('pdfAprOctBtn');
+        const octBtn = document.getElementById('pdfOctMarBtn');
+        if (aprBtn) {
+            aprBtn.addEventListener('click', () => openPdfWithCustomTabName("April to October", PDF_CONFIG["April to October"]));
+        }
+        if (octBtn) {
+            octBtn.addEventListener('click', () => openPdfWithCustomTabName("October To March", PDF_CONFIG["October To March"]));
+        }
+        render(); // initial render
+    });
 </script>
 
 </body>
